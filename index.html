@@ -1,0 +1,1534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>MediCore HMS</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#f0f4f8;--surface:#ffffff;--navy:#0b1c3d;--navy2:#132247;
+  --blue:#1a56db;--blue-l:#3b82f6;--blue-pale:#eff6ff;
+  --teal:#0d9488;--teal-pale:#f0fdfa;
+  --green:#16a34a;--green-pale:#f0fdf4;
+  --amber:#d97706;--amber-pale:#fffbeb;
+  --red:#dc2626;--red-pale:#fef2f2;
+  --purple:#7c3aed;--purple-pale:#f5f3ff;
+  --text:#1e293b;--text2:#475569;--text3:#94a3b8;
+  --border:#e2e8f0;--border2:#cbd5e1;
+  --shadow:0 1px 3px rgba(0,0,0,.08),0 4px 16px rgba(0,0,0,.06);
+  --shadow-lg:0 8px 32px rgba(0,0,0,.12);
+  --radius:14px;--radius-sm:8px;--sidebar:260px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:14px;scroll-behavior:smooth}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px}
+
+/* ── AUTH ─────────────────────────────────────────────────── */
+.auth-wrap{min-height:100vh;display:grid;grid-template-columns:1fr 1fr}
+@media(max-width:768px){.auth-wrap{grid-template-columns:1fr}}
+.auth-left{
+  background:linear-gradient(135deg,#0b1c3d 0%,#132b5e 50%,#0d5c6b 100%);
+  display:flex;flex-direction:column;justify-content:center;align-items:center;
+  padding:3rem;position:relative;overflow:hidden;
+}
+@media(max-width:768px){.auth-left{display:none}}
+.auth-left::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 30% 70%,rgba(29,78,216,.3) 0%,transparent 60%),
+             radial-gradient(ellipse at 80% 20%,rgba(13,148,136,.2) 0%,transparent 50%);
+}
+.auth-logo{font-family:'Syne',sans-serif;font-size:2.4rem;color:#fff;font-weight:800;position:relative;margin-bottom:.4rem}
+.auth-logo span{color:#38bdf8}
+.auth-tagline{color:rgba(255,255,255,.6);font-size:.9rem;position:relative;margin-bottom:3rem}
+.auth-stats{display:flex;gap:2.5rem;position:relative}
+.auth-stat-n{font-size:2rem;font-weight:800;color:#fff;font-family:'Syne',sans-serif}
+.auth-stat-l{font-size:.72rem;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.08em}
+.auth-cross{position:absolute;opacity:.04;right:-40px;top:50%;transform:translateY(-50%)}
+.auth-right{background:#fff;display:flex;align-items:center;justify-content:center;padding:2rem}
+.auth-box{width:100%;max-width:400px}
+.auth-box h2{font-family:'Syne',sans-serif;font-size:1.8rem;color:var(--navy);margin-bottom:.3rem}
+.auth-box p{color:var(--text3);font-size:.88rem;margin-bottom:2rem}
+.form-group{margin-bottom:1rem}
+.form-label{display:block;font-size:.78rem;font-weight:700;color:var(--text2);margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.05em}
+.form-input{width:100%;padding:.75rem 1rem;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:#f8fafc;color:var(--text);font-size:.9rem;outline:none;transition:all .2s}
+.form-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,86,219,.1);background:#fff}
+.form-input.error{border-color:var(--red)}
+select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2394a3b8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .9rem center;padding-right:2.5rem;cursor:pointer}
+textarea.form-input{resize:vertical;min-height:80px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;padding:.7rem 1.4rem;border-radius:var(--radius-sm);font-size:.88rem;font-weight:700;border:none;transition:all .2s;white-space:nowrap}
+.btn-primary{background:var(--blue);color:#fff}
+.btn-primary:hover{background:#1d4ed8;transform:translateY(-1px);box-shadow:0 4px 16px rgba(26,86,219,.35)}
+.btn-primary:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.btn-danger{background:var(--red);color:#fff}
+.btn-danger:hover{background:#b91c1c}
+.btn-success{background:var(--green);color:#fff}
+.btn-success:hover{background:#15803d}
+.btn-outline{background:transparent;border:1.5px solid var(--border2);color:var(--text2)}
+.btn-outline:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-pale)}
+.btn-ghost{background:transparent;color:var(--text2);padding:.5rem .8rem}
+.btn-ghost:hover{background:var(--bg);color:var(--text)}
+.btn-sm{padding:.45rem .9rem;font-size:.8rem}
+.btn-block{width:100%}
+.auth-switch{text-align:center;margin-top:1.2rem;font-size:.85rem;color:var(--text3)}
+.auth-switch a{color:var(--blue);font-weight:700;cursor:pointer}
+.spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner-dark{border-color:rgba(0,0,0,.1);border-top-color:var(--blue)}
+
+/* ── APP SHELL ────────────────────────────────────────────── */
+.app{display:flex;min-height:100vh}
+.sidebar{
+  width:var(--sidebar);flex-shrink:0;background:var(--navy);
+  display:flex;flex-direction:column;position:fixed;top:0;left:0;
+  height:100vh;z-index:200;overflow-y:auto;overflow-x:hidden;
+  transition:transform .25s;
+}
+@media(max-width:1024px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:none}}
+.sb-logo{padding:1.3rem 1.2rem;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:.8rem}
+.sb-logo-icon{width:38px;height:38px;background:linear-gradient(135deg,var(--blue-l),var(--teal));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.sb-logo-text{font-family:'Syne',sans-serif;color:#fff;font-size:1.1rem;font-weight:800;line-height:1}
+.sb-logo-sub{color:rgba(255,255,255,.35);font-size:.65rem;text-transform:uppercase;letter-spacing:.1em}
+.sb-section{padding:.6rem 0}
+.sb-section-label{padding:.6rem 1.2rem .3rem;font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.25);font-weight:700}
+.nav-link{display:flex;align-items:center;gap:.7rem;padding:.6rem 1rem;margin:1px .6rem;border-radius:var(--radius-sm);color:rgba(255,255,255,.55);font-size:.85rem;font-weight:600;cursor:pointer;transition:all .2s;position:relative}
+.nav-link:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.9)}
+.nav-link.active{background:rgba(26,86,219,.3);color:#fff}
+.nav-link.active::before{content:'';position:absolute;left:-.6rem;top:50%;transform:translateY(-50%);width:3px;height:55%;background:var(--blue-l);border-radius:99px}
+.nav-icon{font-size:.95rem;width:18px;text-align:center;flex-shrink:0}
+.nav-badge{margin-left:auto;background:var(--red);color:#fff;font-size:.65rem;font-weight:800;padding:.1rem .45rem;border-radius:99px;min-width:18px;text-align:center}
+.sb-footer{margin-top:auto;padding:1rem;border-top:1px solid rgba(255,255,255,.07)}
+.sb-user{display:flex;align-items:center;gap:.7rem;padding:.6rem;border-radius:var(--radius-sm);cursor:pointer;transition:background .2s}
+.sb-user:hover{background:rgba(255,255,255,.06)}
+.av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--teal));display:flex;align-items:center;justify-content:center;color:#fff;font-size:.8rem;font-weight:800;flex-shrink:0}
+.av-lg{width:52px;height:52px;font-size:1.1rem}
+.sb-user-name{color:#fff;font-size:.85rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-user-role{color:rgba(255,255,255,.35);font-size:.7rem;text-transform:uppercase;letter-spacing:.05em}
+
+/* ── MAIN ────────────────────────────────────────────────── */
+.main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-height:100vh}
+@media(max-width:1024px){.main{margin-left:0}}
+.topbar{height:60px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:1rem;padding:0 1.5rem;position:sticky;top:0;z-index:100;box-shadow:0 1px 0 var(--border)}
+.topbar-menu{display:none;background:none;border:none;font-size:1.2rem;color:var(--text2);padding:.3rem}
+@media(max-width:1024px){.topbar-menu{display:flex}}
+.topbar-title{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;color:var(--navy);white-space:nowrap}
+.topbar-search{flex:1;max-width:380px;position:relative}
+.topbar-search input{width:100%;padding:.5rem 1rem .5rem 2.2rem;border:1.5px solid var(--border);border-radius:99px;background:var(--bg);font-size:.85rem;outline:none;transition:all .2s}
+.topbar-search input:focus{border-color:var(--blue);background:#fff}
+.topbar-search-icon{position:absolute;left:.75rem;top:50%;transform:translateY(-50%);color:var(--text3);font-size:.85rem}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:.5rem}
+.icon-btn{width:36px;height:36px;border-radius:50%;background:var(--bg);border:none;display:flex;align-items:center;justify-content:center;color:var(--text2);font-size:.95rem;position:relative;transition:all .2s}
+.icon-btn:hover{background:var(--blue-pale);color:var(--blue)}
+.notif-badge{position:absolute;top:5px;right:5px;width:7px;height:7px;background:var(--red);border-radius:50%;border:2px solid #fff}
+.content{flex:1;padding:1.5rem}
+
+/* ── PAGE ELEMENTS ────────────────────────────────────────── */
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.5rem;gap:1rem;flex-wrap:wrap}
+.page-title{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;color:var(--navy)}
+.page-sub{color:var(--text3);font-size:.82rem;margin-top:.2rem}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+@media(max-width:1200px){.grid-4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:900px){.grid-3{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:700px){.grid-4,.grid-3,.grid-2{grid-template-columns:1fr}}
+
+/* ── CARDS ───────────────────────────────────────────────── */
+.card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--border)}
+.card-header{padding:1rem 1.2rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:.8rem}
+.card-title{font-weight:800;color:var(--navy);font-size:.95rem}
+.card-body{padding:1.2rem}
+.card-footer{padding:.8rem 1.2rem;border-top:1px solid var(--border);background:#fafafa}
+
+/* ── STAT CARDS ──────────────────────────────────────────── */
+.stat-card{background:#fff;border-radius:var(--radius);padding:1.2rem;box-shadow:var(--shadow);border:1px solid var(--border);display:flex;align-items:center;gap:1rem;transition:all .2s;cursor:default}
+.stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.stat-icon{width:50px;height:50px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0}
+.stat-icon.blue{background:var(--blue-pale);color:var(--blue)}
+.stat-icon.teal{background:var(--teal-pale);color:var(--teal)}
+.stat-icon.green{background:var(--green-pale);color:var(--green)}
+.stat-icon.amber{background:var(--amber-pale);color:var(--amber)}
+.stat-icon.red{background:var(--red-pale);color:var(--red)}
+.stat-icon.purple{background:var(--purple-pale);color:var(--purple)}
+.stat-val{font-family:'Syne',sans-serif;font-size:1.9rem;font-weight:800;color:var(--navy);line-height:1}
+.stat-label{font-size:.78rem;color:var(--text3);margin-top:.25rem}
+.stat-change{font-size:.75rem;font-weight:700;margin-top:.3rem}
+.stat-change.up{color:var(--green)}
+.stat-change.dn{color:var(--red)}
+
+/* ── TABLE ───────────────────────────────────────────────── */
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.85rem}
+thead{border-bottom:2px solid var(--border)}
+th{padding:.7rem 1rem;text-align:left;font-size:.72rem;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+td{padding:.8rem 1rem;color:var(--text);border-bottom:1px solid #f1f5f9;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tbody tr{transition:background .15s}
+tbody tr:hover{background:#f8fafc}
+.td-main{font-weight:700;color:var(--navy)}
+
+/* ── BADGES ──────────────────────────────────────────────── */
+.badge{display:inline-flex;align-items:center;padding:.22rem .65rem;border-radius:99px;font-size:.72rem;font-weight:700}
+.badge-blue{background:var(--blue-pale);color:var(--blue)}
+.badge-green{background:var(--green-pale);color:var(--green)}
+.badge-amber{background:var(--amber-pale);color:var(--amber)}
+.badge-red{background:var(--red-pale);color:var(--red)}
+.badge-teal{background:var(--teal-pale);color:var(--teal)}
+.badge-purple{background:var(--purple-pale);color:var(--purple)}
+.badge-gray{background:#f1f5f9;color:var(--text3)}
+
+/* ── MODAL ───────────────────────────────────────────────── */
+.overlay{position:fixed;inset:0;background:rgba(11,28,61,.5);z-index:500;display:flex;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(3px);animation:fadeIn .2s}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow-lg);width:100%;max-width:520px;max-height:90vh;overflow-y:auto;animation:slideUp .2s}
+.modal-lg{max-width:700px}
+@keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.modal-head{padding:1.2rem 1.4rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-title{font-family:'Syne',sans-serif;font-weight:800;color:var(--navy);font-size:1rem}
+.modal-close{width:30px;height:30px;border-radius:50%;border:none;background:var(--bg);color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;transition:all .2s}
+.modal-close:hover{background:var(--red-pale);color:var(--red)}
+.modal-body{padding:1.4rem}
+.modal-foot{padding:1rem 1.4rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:.6rem}
+
+/* ── ALERTS & TOASTS ─────────────────────────────────────── */
+.alert{border-radius:var(--radius-sm);padding:.8rem 1rem;display:flex;align-items:flex-start;gap:.6rem;font-size:.85rem;border:1px solid transparent;margin-bottom:1rem}
+.alert-warn{background:var(--amber-pale);border-color:rgba(217,119,6,.25);color:#92400e}
+.alert-danger{background:var(--red-pale);border-color:rgba(220,38,38,.25);color:#991b1b}
+.alert-info{background:var(--blue-pale);border-color:rgba(26,86,219,.2);color:#1e40af}
+.alert-success{background:var(--green-pale);border-color:rgba(22,163,74,.2);color:#166534}
+#toast-root{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:.6rem;pointer-events:none}
+.toast{background:#1e293b;color:#fff;padding:.8rem 1.1rem;border-radius:var(--radius-sm);font-size:.85rem;font-weight:600;display:flex;align-items:center;gap:.6rem;box-shadow:var(--shadow-lg);pointer-events:all;animation:toastIn .3s;max-width:320px}
+.toast.hide{animation:toastOut .3s forwards}
+.toast-success{border-left:3px solid var(--green)}
+.toast-error{border-left:3px solid var(--red)}
+.toast-warn{border-left:3px solid var(--amber)}
+.toast-info{border-left:3px solid var(--blue-l)}
+@keyframes toastIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:none}}
+@keyframes toastOut{to{opacity:0;transform:translateX(20px)}}
+
+/* ── MISC ────────────────────────────────────────────────── */
+.divider{height:1px;background:var(--border);margin:1rem 0}
+.empty{text-align:center;padding:3rem 1rem;color:var(--text3)}
+.empty-icon{font-size:2.5rem;margin-bottom:.8rem}
+.tabs{display:flex;border-bottom:2px solid var(--border);margin-bottom:1.2rem;overflow-x:auto}
+.tab{padding:.6rem 1.1rem;font-size:.85rem;font-weight:700;color:var(--text3);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:all .2s}
+.tab.active{color:var(--blue);border-bottom-color:var(--blue)}
+.tab:hover{color:var(--text)}
+.actions{display:flex;gap:.5rem}
+.progress{height:6px;background:var(--bg);border-radius:99px;overflow:hidden}
+.progress-fill{height:100%;border-radius:99px;transition:width .5s}
+.overlay-backdrop{position:fixed;inset:0;z-index:150}
+.notif-panel{position:absolute;top:calc(100% + 8px);right:0;width:320px;background:#fff;border-radius:var(--radius);box-shadow:var(--shadow-lg);border:1px solid var(--border);z-index:300;overflow:hidden}
+.notif-item{display:flex;gap:.7rem;padding:.8rem 1rem;border-bottom:1px solid #f1f5f9;cursor:pointer;transition:background .15s}
+.notif-item:hover{background:var(--bg)}
+.notif-item:last-child{border:none}
+.notif-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.emergency-bar{background:linear-gradient(90deg,#991b1b,#b91c1c);color:#fff;padding:.5rem 1.5rem;display:flex;align-items:center;justify-content:space-between;font-size:.82rem;font-weight:700}
+.blink{animation:blink 1.2s step-end infinite}
+@keyframes blink{50%{opacity:0}}
+.room-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:.5rem}
+.room-cell{aspect-ratio:1;border-radius:var(--radius-sm);border:2px solid;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;cursor:pointer;transition:all .2s}
+.room-cell:hover{transform:scale(1.05)}
+.room-available{border-color:var(--green);background:var(--green-pale);color:var(--green)}
+.room-occupied{border-color:var(--red);background:var(--red-pale);color:var(--red)}
+.room-maintenance{border-color:var(--amber);background:var(--amber-pale);color:var(--amber)}
+.room-num{font-size:.95rem}
+.fade-in{animation:fadeIn .3s}
+
+/* ── BOTTOM NAV (mobile) ─────────────────────────────────── */
+.bottom-nav{
+  display:none;position:fixed;bottom:0;left:0;right:0;
+  background:#fff;border-top:1px solid var(--border);
+  z-index:200;padding:0 0 env(safe-area-inset-bottom);
+  box-shadow:0 -4px 24px rgba(0,0,0,.08);
+}
+.bottom-nav-inner{display:flex;justify-content:space-around;align-items:center}
+.bn-item{display:flex;flex-direction:column;align-items:center;gap:2px;
+  padding:.6rem .4rem;font-size:.62rem;font-weight:700;color:var(--text3);
+  cursor:pointer;transition:color .2s;flex:1;min-width:0;border:none;background:none;font-family:inherit}
+.bn-item.active{color:var(--blue)}
+.bn-icon{font-size:1.25rem;line-height:1}
+.bn-label{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.bn-more-panel{
+  position:fixed;bottom:0;left:0;right:0;
+  background:#fff;border-radius:20px 20px 0 0;
+  box-shadow:0 -8px 32px rgba(0,0,0,.15);
+  z-index:300;padding:1rem 1rem calc(1rem + env(safe-area-inset-bottom));
+  animation:slideUp .25s;
+}
+.bn-more-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin-top:.8rem}
+.bn-more-item{display:flex;flex-direction:column;align-items:center;gap:.3rem;
+  padding:.8rem .4rem;border-radius:var(--radius-sm);cursor:pointer;
+  font-size:.75rem;font-weight:700;color:var(--text2);
+  border:1.5px solid var(--border);transition:all .2s;background:none;font-family:inherit}
+.bn-more-item.active{background:var(--blue-pale);border-color:var(--blue);color:var(--blue)}
+
+/* ── FULL RESPONSIVE ──────────────────────────────────────── */
+@media(max-width:1024px){
+  .bottom-nav{display:block}
+  .content{padding-bottom:calc(72px + env(safe-area-inset-bottom))}
+  .notif-panel{position:fixed;top:auto;bottom:calc(72px + env(safe-area-inset-bottom));right:8px;left:8px;width:auto}
+  #toast-root{bottom:calc(80px + env(safe-area-inset-bottom));right:12px;left:12px}
+  .toast{max-width:100%}
+}
+@media(max-width:600px){
+  .content{padding:1rem;padding-bottom:calc(72px + env(safe-area-inset-bottom))}
+  .page-header{flex-direction:column;align-items:stretch;gap:.8rem}
+  .page-header>div:last-child{display:flex;flex-wrap:wrap;gap:.5rem}
+  .page-header input.form-input{flex:1;min-width:0}
+  .page-title{font-size:1.2rem}
+  .stat-card{padding:1rem}
+  .stat-val{font-size:1.5rem}
+  .stat-icon{width:42px;height:42px;font-size:1.1rem}
+  .modal{border-radius:20px 20px 0 0;position:fixed;bottom:0;left:0;right:0;max-width:100%;max-height:92vh;margin:0;animation:slideUp .25s}
+  .overlay{align-items:flex-end;padding:0}
+  .modal-body .grid-2{grid-template-columns:1fr}
+  th{font-size:.68rem;padding:.55rem .6rem}
+  td{padding:.65rem .6rem;font-size:.82rem}
+  .actions{gap:.3rem}
+  .topbar-search{display:none}
+  .topbar{padding:0 1rem;gap:.7rem}
+  .topbar-title{font-size:1rem}
+  .card-body{padding:.9rem}
+  .card-header{padding:.8rem 1rem}
+  .tab{padding:.5rem .7rem;font-size:.8rem}
+  .room-grid{grid-template-columns:repeat(auto-fill,minmax(58px,1fr))}
+  .modal-body{padding:1rem}
+  .modal-foot{padding:.8rem 1rem;flex-wrap:wrap}
+  .modal-foot .btn{flex:1}
+}
+@media(max-width:400px){
+  .grid-4{grid-template-columns:1fr 1fr}
+  .stat-val{font-size:1.3rem}
+  html{font-size:13px}
+}
+@media(hover:none){
+  .btn:hover{transform:none;box-shadow:none}
+  .stat-card:hover{transform:none;box-shadow:var(--shadow)}
+  .btn:active{opacity:.8;transform:scale(.97)}
+  .bn-item:active{opacity:.6}
+}
+.modal-handle{width:40px;height:4px;background:var(--border2);border-radius:99px;margin:.6rem auto 0;display:none}
+@media(max-width:600px){.modal-handle{display:block}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<div id="toast-root"></div>
+
+<script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="module">
+  import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import{getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import{getDatabase,ref,set,get,push,update,remove,onValue,query,orderByChild}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  const cfg={apiKey:"AIzaSyDFlZqmBApKlD2spzL8FXbdoAkILl2VGHI",authDomain:"medicore-hms-796e9.firebaseapp.com",databaseURL:"https://medicore-hms-796e9-default-rtdb.firebaseio.com",projectId:"medicore-hms-796e9",appId:"1:851951441832:web:3727e4b5c121347e4c2f9d"};
+  const app=initializeApp(cfg);
+  const auth=getAuth(app);
+  const db=getDatabase(app);
+  window.$fb={auth,db,ref,set,get,push,update,remove,onValue,query,orderByChild,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,onAuthStateChanged};
+  console.log("Firebase ready");
+</script>
+
+<script type="text/babel">
+const {useState,useEffect,useRef,useCallback,createContext,useContext}=React;
+const Ctx=createContext({});
+const useApp=()=>useContext(Ctx);
+
+/* ─── TOAST ──────────────────────────────────────────────── */
+function toast(msg,type='info'){
+  const el=document.createElement('div');
+  el.className=`toast toast-${type}`;
+  const icons={success:'✅',error:'❌',warn:'⚠️',info:'ℹ️'};
+  el.innerHTML=`<span>${icons[type]||'ℹ️'}</span><span>${msg}</span>`;
+  document.getElementById('toast-root').appendChild(el);
+  setTimeout(()=>{el.classList.add('hide');setTimeout(()=>el.remove(),300)},3500);
+}
+
+/* ─── MODAL ──────────────────────────────────────────────── */
+function Modal({title,children,onClose,size=''}){
+  useEffect(()=>{
+    const h=(e)=>{if(e.key==='Escape')onClose()};
+    document.addEventListener('keydown',h);
+    return()=>document.removeEventListener('keydown',h);
+  },[onClose]);
+  return(
+    <div className="overlay" onClick={e=>{if(e.target.className==='overlay')onClose()}}>
+      <div className={`modal ${size}`}>
+        <div className="modal-handle"/>
+        <div className="modal-head">
+          <span className="modal-title">{title}</span>
+          <button className="modal-close" onClick={onClose}>✕</button>
+        </div>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+/* ─── CONFIRM MODAL ──────────────────────────────────────── */
+function Confirm({msg,onYes,onNo}){
+  return(
+    <Modal title="Confirm" onClose={onNo}>
+      <div className="modal-body"><p style={{fontSize:'.95rem'}}>{msg}</p></div>
+      <div className="modal-foot">
+        <button className="btn btn-outline btn-sm" onClick={onNo}>Cancel</button>
+        <button className="btn btn-danger btn-sm" onClick={onYes}>Delete</button>
+      </div>
+    </Modal>
+  );
+}
+
+/* ─── HELPERS ────────────────────────────────────────────── */
+const initials=(n='?')=>n.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+const fmt$=(n)=>'$'+parseFloat(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+const today=()=>new Date().toISOString().split('T')[0];
+const statusClass=(s)=>{
+  const m={active:'green',admitted:'blue',outpatient:'teal',discharged:'gray',critical:'red',
+    confirmed:'green',scheduled:'blue',completed:'green',cancelled:'red',pending:'amber',
+    paid:'green',unpaid:'red',partial:'amber',available:'green',occupied:'red',maintenance:'amber',
+    online:'green',busy:'amber',offline:'gray','in stock':'green','low stock':'amber','out of stock':'red'};
+  return 'badge badge-'+(m[(s||'').toLowerCase()]||'gray');
+};
+
+/* ─── FB HELPERS ─────────────────────────────────────────── */
+const fbList=(path,setter)=>{
+  const {db,ref,onValue}=window.$fb;
+  const unsub=onValue(ref(db,path),snap=>{
+    if(snap.exists()){
+      const arr=Object.entries(snap.val()).map(([k,v])=>({...v,_id:k}));
+      setter(arr);
+    } else setter([]);
+  });
+  return unsub;
+};
+const fbAdd=(path,data)=>{
+  const {db,ref,push}=window.$fb;
+  return push(ref(db,path),{...data,_created:Date.now()});
+};
+const fbUpdate=(path,id,data)=>{
+  const {db,ref,update}=window.$fb;
+  return update(ref(db,`${path}/${id}`),data);
+};
+const fbDelete=(path,id)=>{
+  const {db,ref,remove}=window.$fb;
+  return remove(ref(db,`${path}/${id}`));
+};
+const fbGet=(path)=>{
+  const {db,ref,get}=window.$fb;
+  return get(ref(db,path));
+};
+
+/* ─── AUTH PAGE ──────────────────────────────────────────── */
+function AuthPage({onLogin}){
+  const [tab,setTab]=useState('login');
+  const [email,setEmail]=useState('');
+  const [pass,setPass]=useState('');
+  const [name,setName]=useState('');
+  const [role,setRole]=useState('admin');
+  const [loading,setLoading]=useState(false);
+  const [stats,setStats]=useState({patients:0,doctors:0,appointments:0});
+
+  useEffect(()=>{
+    // Load real counts for display
+    ['patients','doctors','appointments'].forEach(p=>{
+      fbGet(p).then(s=>{
+        if(s.exists()) setStats(prev=>({...prev,[p]:Object.keys(s.val()).length}));
+      }).catch(()=>{});
+    });
+  },[]);
+
+  const login=async()=>{
+    if(!email||!pass){toast('Enter email and password','error');return;}
+    setLoading(true);
+    try{
+      const {auth,signInWithEmailAndPassword,db,ref,get}=window.$fb;
+      const cred=await signInWithEmailAndPassword(auth,email,pass);
+      const snap=await get(ref(db,`users/${cred.user.uid}`));
+      if(snap.exists()){
+        const u=snap.val();
+        onLogin({uid:cred.user.uid,name:u.name,role:u.role,email:u.email});
+      } else {
+        onLogin({uid:cred.user.uid,name:email.split('@')[0],role:'admin',email});
+      }
+      toast('Welcome back!','success');
+    }catch(e){
+      const m={
+        'auth/invalid-credential':'Wrong email or password.',
+        'auth/user-not-found':'No account found.',
+        'auth/wrong-password':'Wrong password.',
+        'auth/invalid-email':'Invalid email address.'
+      };
+      toast(m[e.code]||e.message,'error');
+    }
+    setLoading(false);
+  };
+
+  const register=async()=>{
+    if(!name||!email||!pass){toast('Fill all fields','error');return;}
+    if(pass.length<6){toast('Password needs 6+ characters','error');return;}
+    setLoading(true);
+    try{
+      const {auth,createUserWithEmailAndPassword,db,ref,set}=window.$fb;
+      const cred=await createUserWithEmailAndPassword(auth,email,pass);
+      await set(ref(db,`users/${cred.user.uid}`),{name,email,role,createdAt:Date.now()});
+      toast('Account created! Please log in.','success');
+      setTab('login');setEmail(email);setPass('');
+    }catch(e){
+      const m={'auth/email-already-in-use':'Email already registered.','auth/weak-password':'Password too weak.'};
+      toast(m[e.code]||e.message,'error');
+    }
+    setLoading(false);
+  };
+
+  return(
+    <div className="auth-wrap">
+      <div className="auth-left">
+        <svg className="auth-cross" width="320" height="320" viewBox="0 0 320 320" fill="none">
+          <rect x="130" y="20" width="60" height="280" rx="20" fill="white"/>
+          <rect x="20" y="130" width="280" height="60" rx="20" fill="white"/>
+        </svg>
+        <div className="auth-logo">Medi<span>Core</span></div>
+        <div className="auth-tagline">Hospital Management System</div>
+        <div className="auth-stats">
+          <div className="auth-stat"><div className="auth-stat-n">{stats.patients}</div><div className="auth-stat-l">Patients</div></div>
+          <div className="auth-stat"><div className="auth-stat-n">{stats.doctors}</div><div className="auth-stat-l">Doctors</div></div>
+          <div className="auth-stat"><div className="auth-stat-n">{stats.appointments}</div><div className="auth-stat-l">Appointments</div></div>
+        </div>
+      </div>
+
+      <div className="auth-right">
+        <div className="auth-box">
+          <div className="tabs" style={{marginBottom:'1.5rem'}}>
+            <button className={`tab${tab==='login'?' active':''}`} onClick={()=>setTab('login')}>Sign In</button>
+            <button className={`tab${tab==='register'?' active':''}`} onClick={()=>setTab('register')}>Register</button>
+          </div>
+
+          {tab==='login'&&(
+            <>
+              <h2>Welcome back</h2>
+              <p style={{marginBottom:'1.5rem'}}>Sign in to your MediCore account</p>
+              <div className="form-group"><label className="form-label">Email</label>
+                <input className="form-input" type="email" placeholder="you@hospital.com" value={email} onChange={e=>setEmail(e.target.value)} onKeyDown={e=>e.key==='Enter'&&login()}/>
+              </div>
+              <div className="form-group"><label className="form-label">Password</label>
+                <input className="form-input" type="password" placeholder="••••••••" value={pass} onChange={e=>setPass(e.target.value)} onKeyDown={e=>e.key==='Enter'&&login()}/>
+              </div>
+              <button className="btn btn-primary btn-block" onClick={login} disabled={loading}>
+                {loading?<><div className="spinner"/>Signing in…</>:'Sign In →'}
+              </button>
+              <div className="auth-switch">No account? <a onClick={()=>setTab('register')}>Register here</a></div>
+            </>
+          )}
+
+          {tab==='register'&&(
+            <>
+              <h2>Create Account</h2>
+              <p style={{marginBottom:'1.5rem'}}>Join MediCore HMS</p>
+              <div className="form-group"><label className="form-label">Full Name</label>
+                <input className="form-input" placeholder="Dr. John Smith" value={name} onChange={e=>setName(e.target.value)}/>
+              </div>
+              <div className="form-group"><label className="form-label">Email</label>
+                <input className="form-input" type="email" placeholder="you@hospital.com" value={email} onChange={e=>setEmail(e.target.value)}/>
+              </div>
+              <div className="form-group"><label className="form-label">Role</label>
+                <select className="form-input" value={role} onChange={e=>setRole(e.target.value)}>
+                  <option value="admin">Administrator</option>
+                  <option value="doctor">Doctor</option>
+                  <option value="nurse">Nurse</option>
+                  <option value="receptionist">Receptionist</option>
+                </select>
+              </div>
+              <div className="form-group"><label className="form-label">Password</label>
+                <input className="form-input" type="password" placeholder="Min 6 characters" value={pass} onChange={e=>setPass(e.target.value)}/>
+              </div>
+              <button className="btn btn-primary btn-block" onClick={register} disabled={loading}>
+                {loading?<><div className="spinner"/>Creating…</>:'Create Account'}
+              </button>
+              <div className="auth-switch">Have an account? <a onClick={()=>setTab('login')}>Sign in</a></div>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── NOTIFICATIONS PANEL ────────────────────────────────── */
+function NotifPanel({items,onClose}){
+  return(
+    <div className="notif-panel">
+      <div className="card-header"><span className="card-title">Notifications</span><button className="btn-ghost btn btn-sm" onClick={onClose}>✕</button></div>
+      {items.length===0&&<div className="empty" style={{padding:'1.5rem'}}>No notifications</div>}
+      {items.map((n,i)=>(
+        <div key={i} className="notif-item">
+          <div className="notif-dot" style={{background:n.color||'var(--blue-l)'}}/>
+          <div>
+            <div style={{fontSize:'.83rem',fontWeight:600,color:'var(--text)'}}>{n.text}</div>
+            <div style={{fontSize:'.75rem',color:'var(--text3)',marginTop:'.2rem'}}>{n.time}</div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ─── DASHBOARD ──────────────────────────────────────────── */
+function DashboardPage(){
+  const [stats,setStats]=useState({patients:0,doctors:0,appointments:0,revenue:0,rooms:0,lab:0,pending:0,critical:0});
+  const [recent,setRecent]=useState([]);
+  const [lowStock,setLowStock]=useState([]);
+
+  useEffect(()=>{
+    const unsubs=[];
+    unsubs.push(fbList('patients',d=>{
+      setStats(p=>({...p,patients:d.length,critical:d.filter(x=>x.status==='critical').length}));
+      setRecent(d.slice(-5).reverse().map(x=>({icon:'🧑‍⚕️',text:`Patient: ${x.name}`,sub:x.status||'',time:x._created})));
+    }));
+    unsubs.push(fbList('doctors',d=>setStats(p=>({...p,doctors:d.length}))));
+    unsubs.push(fbList('appointments',d=>{
+      setStats(p=>({...p,appointments:d.length,pending:d.filter(x=>x.status==='pending'||x.status==='scheduled').length}));
+    }));
+    unsubs.push(fbList('billing',d=>{
+      const rev=d.reduce((s,x)=>s+parseFloat(x.amount||0),0);
+      setStats(p=>({...p,revenue:rev}));
+    }));
+    unsubs.push(fbList('rooms',d=>setStats(p=>({...p,rooms:d.filter(x=>x.status==='available').length}))));
+    unsubs.push(fbList('lab',d=>setStats(p=>({...p,lab:d.length}))));
+    unsubs.push(fbList('pharmacy',d=>{
+      setLowStock(d.filter(x=>parseInt(x.stock||0)<=parseInt(x.minStock||10)));
+    }));
+    return()=>unsubs.forEach(u=>u&&u());
+  },[]);
+
+  const cards=[
+    {label:'Total Patients',val:stats.patients,icon:'🧑‍⚕️',color:'blue',change:null},
+    {label:'Doctors',val:stats.doctors,icon:'👨‍⚕️',color:'teal',change:null},
+    {label:'Appointments',val:stats.appointments,icon:'📅',color:'purple',change:`${stats.pending} pending`},
+    {label:'Total Revenue',val:fmt$(stats.revenue),icon:'💰',color:'green',change:null},
+    {label:'Critical Patients',val:stats.critical,icon:'🚨',color:'red',change:null},
+    {label:'Available Rooms',val:stats.rooms,icon:'🛏️',color:'amber',change:null},
+    {label:'Lab Tests',val:stats.lab,icon:'🔬',color:'blue',change:null},
+    {label:'Low Stock Drugs',val:lowStock.length,icon:'💊',color:lowStock.length>0?'red':'green',change:null},
+  ];
+
+  return(
+    <div className="fade-in">
+      <div className="page-header">
+        <div><div className="page-title">Dashboard</div><div className="page-sub">Real-time hospital overview</div></div>
+      </div>
+
+      {lowStock.length>0&&(
+        <div className="alert alert-danger" style={{marginBottom:'1.2rem'}}>
+          <span>🚨</span>
+          <div><strong>Low Stock Alert:</strong> {lowStock.map(m=>m.name).join(', ')} — immediate reorder needed.</div>
+        </div>
+      )}
+      {stats.critical>0&&(
+        <div className="alert alert-warn" style={{marginBottom:'1.2rem'}}>
+          <span>⚠️</span>
+          <div><strong>{stats.critical} critical patient(s)</strong> require immediate attention.</div>
+        </div>
+      )}
+
+      <div className="grid-4" style={{marginBottom:'1.5rem'}}>
+        {cards.map(c=>(
+          <div key={c.label} className="stat-card">
+            <div className={`stat-icon ${c.color}`}>{c.icon}</div>
+            <div>
+              <div className="stat-val">{c.val}</div>
+              <div className="stat-label">{c.label}</div>
+              {c.change&&<div className="stat-change" style={{color:'var(--amber)'}}>{c.change}</div>}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="grid-2">
+        <div className="card">
+          <div className="card-header"><span className="card-title">Recent Patients</span></div>
+          <div className="card-body">
+            {recent.length===0&&<div className="empty"><div className="empty-icon">👤</div>No patients yet</div>}
+            {recent.map((r,i)=>(
+              <div key={i} style={{display:'flex',alignItems:'center',gap:'.8rem',padding:'.6rem 0',borderBottom:'1px solid #f1f5f9'}}>
+                <div style={{fontSize:'1.4rem'}}>{r.icon}</div>
+                <div style={{flex:1}}>
+                  <div style={{fontWeight:700,fontSize:'.88rem',color:'var(--navy)'}}>{r.text}</div>
+                  <div style={{fontSize:'.75rem',color:'var(--text3)',textTransform:'capitalize'}}>{r.sub}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="card">
+          <div className="card-header"><span className="card-title">Pharmacy Alerts</span></div>
+          <div className="card-body">
+            {lowStock.length===0&&<div className="empty"><div className="empty-icon">✅</div>All stock levels OK</div>}
+            {lowStock.map((m,i)=>(
+              <div key={i} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'.6rem 0',borderBottom:'1px solid #f1f5f9'}}>
+                <div style={{fontWeight:700,fontSize:'.88rem',color:'var(--navy)'}}>💊 {m.name}</div>
+                <span className={statusClass(parseInt(m.stock||0)===0?'out of stock':'low stock')}>
+                  {m.stock||0} left
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── GENERIC CRUD PAGE ──────────────────────────────────── */
+/* fields: [{key,label,type,required,options}] */
+function CrudPage({title,icon,path,fields,renderRow,renderCard}){
+  const [items,setItems]=useState([]);
+  const [modal,setModal]=useState(null); // null | 'add' | {item for edit}
+  const [form,setForm]=useState({});
+  const [saving,setSaving]=useState(false);
+  const [search,setSearch]=useState('');
+  const [confirm,setConfirm]=useState(null);
+
+  useEffect(()=>fbList(path,setItems),[path]);
+
+  const openAdd=()=>{
+    const def={};
+    fields.forEach(f=>{def[f.key]=f.default||''});
+    setForm(def);setModal('add');
+  };
+  const openEdit=(item)=>{
+    const f={};
+    fields.forEach(fi=>{f[fi.key]=item[fi.key]||fi.default||''});
+    setForm({...f,_id:item._id});
+    setModal('edit');
+  };
+  const save=async()=>{
+    const missing=fields.filter(f=>f.required&&!form[f.key]);
+    if(missing.length){toast(`Required: ${missing.map(f=>f.label).join(', ')},'error'`);return;}
+    setSaving(true);
+    try{
+      if(modal==='edit'){
+        await fbUpdate(path,form._id,form);
+        toast(`${title.slice(0,-1)} updated!`,'success');
+      } else {
+        await fbAdd(path,form);
+        toast(`${title.slice(0,-1)} added!`,'success');
+      }
+      setModal(null);
+    }catch(e){toast('Error: '+e.message,'error');}
+    setSaving(false);
+  };
+  const del=async(id)=>{
+    try{await fbDelete(path,id);toast('Deleted','info');}
+    catch(e){toast('Error: '+e.message,'error');}
+    setConfirm(null);
+  };
+  const setF=(k,v)=>setForm(p=>({...p,[k]:v}));
+
+  const filtered=items.filter(it=>{
+    if(!search)return true;
+    return Object.values(it).some(v=>String(v).toLowerCase().includes(search.toLowerCase()));
+  });
+
+  return(
+    <div className="fade-in">
+      {confirm&&<Confirm msg={`Delete this ${title.slice(0,-1).toLowerCase()}?`} onYes={()=>del(confirm)} onNo={()=>setConfirm(null)}/>}
+
+      {modal&&(
+        <Modal title={modal==='edit'?`Edit ${title.slice(0,-1)}`:`Add ${title.slice(0,-1)}`} onClose={()=>setModal(null)}>
+          <div className="modal-body">
+            <div className="grid-2">
+              {fields.filter(f=>f.type!=='textarea').map(f=>(
+                <div key={f.key} className="form-group" style={f.full?{gridColumn:'1/-1'}:{}}>
+                  <label className="form-label">{f.label}{f.required&&' *'}</label>
+                  {f.type==='select'?(
+                    <select className="form-input" value={form[f.key]||''} onChange={e=>setF(f.key,e.target.value)}>
+                      <option value="">Select…</option>
+                      {f.options.map(o=><option key={o} value={o}>{o}</option>)}
+                    </select>
+                  ):(
+                    <input className="form-input" type={f.type||'text'} placeholder={f.placeholder||f.label}
+                      value={form[f.key]||''} onChange={e=>setF(f.key,e.target.value)}/>
+                  )}
+                </div>
+              ))}
+            </div>
+            {fields.filter(f=>f.type==='textarea').map(f=>(
+              <div key={f.key} className="form-group">
+                <label className="form-label">{f.label}</label>
+                <textarea className="form-input" placeholder={f.placeholder||f.label} rows={3}
+                  value={form[f.key]||''} onChange={e=>setF(f.key,e.target.value)}/>
+              </div>
+            ))}
+          </div>
+          <div className="modal-foot">
+            <button className="btn btn-outline btn-sm" onClick={()=>setModal(null)}>Cancel</button>
+            <button className="btn btn-primary btn-sm" onClick={save} disabled={saving}>
+              {saving?<><div className="spinner"/>Saving…</>:(modal==='edit'?'Save Changes':'Add '+title.slice(0,-1))}
+            </button>
+          </div>
+        </Modal>
+      )}
+
+      <div className="page-header">
+        <div><div className="page-title">{icon} {title}</div><div className="page-sub">{filtered.length} record{filtered.length!==1?'s':''}</div></div>
+        <div style={{display:'flex',gap:'.6rem',alignItems:'center',flexWrap:'wrap'}}>
+          <input className="form-input" style={{width:220,padding:'.5rem .9rem',fontSize:'.85rem'}}
+            placeholder={`Search ${title.toLowerCase()}…`} value={search} onChange={e=>setSearch(e.target.value)}/>
+          <button className="btn btn-primary btn-sm" onClick={openAdd}>+ Add {title.slice(0,-1)}</button>
+        </div>
+      </div>
+
+      <div className="card">
+        <div className="table-wrap">
+          {filtered.length===0
+            ?<div className="empty"><div className="empty-icon">{icon}</div>No {title.toLowerCase()} yet. Click "+ Add" to get started.</div>
+            :<table>
+              <thead><tr>
+                {renderRow.headers.map(h=><th key={h}>{h}</th>)}
+                <th>Actions</th>
+              </tr></thead>
+              <tbody>
+                {filtered.map(item=>(
+                  <tr key={item._id}>
+                    {renderRow.cells(item)}
+                    <td>
+                      <div className="actions">
+                        <button className="btn btn-outline btn-sm" onClick={()=>openEdit(item)}>✏️ Edit</button>
+                        <button className="btn btn-sm" style={{background:'var(--red-pale)',color:'var(--red)',border:'none'}} onClick={()=>setConfirm(item._id)}>🗑️</button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          }
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── PATIENTS ───────────────────────────────────────────── */
+function PatientsPage(){
+  const fields=[
+    {key:'name',label:'Full Name',required:true,placeholder:'e.g. Jane Smith'},
+    {key:'age',label:'Age',type:'number',required:true,placeholder:'e.g. 35'},
+    {key:'gender',label:'Gender',type:'select',options:['Male','Female','Other']},
+    {key:'blood',label:'Blood Type',type:'select',options:['A+','A-','B+','B-','AB+','AB-','O+','O-']},
+    {key:'phone',label:'Phone',placeholder:'+1 555-0100'},
+    {key:'doctor',label:'Doctor',placeholder:'Dr. Name'},
+    {key:'ward',label:'Ward/Department',placeholder:'e.g. Cardiology'},
+    {key:'status',label:'Status',type:'select',options:['Admitted','Outpatient','Critical','Discharged'],required:true},
+    {key:'diagnosis',label:'Diagnosis',placeholder:'Primary diagnosis',full:true},
+    {key:'notes',label:'Notes',type:'textarea',placeholder:'Additional notes…'},
+  ];
+  const renderRow={
+    headers:['Patient','Age','Gender','Blood','Ward','Doctor','Status'],
+    cells:(p)=>[
+      <td key="n"><div style={{display:'flex',alignItems:'center',gap:'.6rem'}}>
+        <div className="av" style={{width:32,height:32,fontSize:'.75rem'}}>{initials(p.name)}</div>
+        <div>
+          <div className="td-main">{p.name}</div>
+          <div style={{fontSize:'.75rem',color:'var(--text3)'}}>{p.phone}</div>
+        </div>
+      </div></td>,
+      <td key="a">{p.age}</td>,
+      <td key="g"><span className="badge badge-gray">{p.gender}</span></td>,
+      <td key="b"><span className="badge badge-blue">{p.blood}</span></td>,
+      <td key="w">{p.ward}</td>,
+      <td key="d">{p.doctor}</td>,
+      <td key="s"><span className={statusClass(p.status)}>{p.status}</span></td>,
+    ]
+  };
+  return <CrudPage title="Patients" icon="🧑‍⚕️" path="patients" fields={fields} renderRow={renderRow}/>;
+}
+
+/* ─── DOCTORS ────────────────────────────────────────────── */
+function DoctorsPage(){
+  const fields=[
+    {key:'name',label:'Full Name',required:true,placeholder:'Dr. Elena Martinez'},
+    {key:'specialty',label:'Specialty',required:true,placeholder:'e.g. Cardiology'},
+    {key:'phone',label:'Phone',placeholder:'+1 555-2000'},
+    {key:'email',label:'Email',type:'email',placeholder:'doctor@hospital.com'},
+    {key:'experience',label:'Experience (years)',type:'number',placeholder:'10'},
+    {key:'schedule',label:'Schedule',placeholder:'Mon–Fri 9am–5pm'},
+    {key:'status',label:'Status',type:'select',options:['Available','On Leave','Off Duty'],required:true},
+    {key:'qualification',label:'Qualification',placeholder:'MBBS, MD'},
+  ];
+  const renderRow={
+    headers:['Doctor','Specialty','Phone','Email','Experience','Status'],
+    cells:(d)=>[
+      <td key="n"><div style={{display:'flex',alignItems:'center',gap:'.6rem'}}>
+        <div className="av" style={{width:32,height:32,fontSize:'.75rem'}}>{initials(d.name)}</div>
+        <div className="td-main">{d.name}</div>
+      </div></td>,
+      <td key="s"><span className="badge badge-blue">{d.specialty}</span></td>,
+      <td key="p">{d.phone}</td>,
+      <td key="e">{d.email}</td>,
+      <td key="x">{d.experience?`${d.experience} yrs`:'-'}</td>,
+      <td key="st"><span className={statusClass(d.status)}>{d.status}</span></td>,
+    ]
+  };
+  return <CrudPage title="Doctors" icon="👨‍⚕️" path="doctors" fields={fields} renderRow={renderRow}/>;
+}
+
+/* ─── APPOINTMENTS ───────────────────────────────────────── */
+function AppointmentsPage(){
+  const fields=[
+    {key:'patientName',label:'Patient Name',required:true,placeholder:'Jane Smith'},
+    {key:'doctorName',label:'Doctor Name',required:true,placeholder:'Dr. Elena Martinez'},
+    {key:'department',label:'Department',placeholder:'Cardiology'},
+    {key:'date',label:'Date',type:'date',required:true,default:today()},
+    {key:'time',label:'Time',type:'time',required:true,default:'09:00'},
+    {key:'type',label:'Type',type:'select',options:['Consultation','Follow-up','Emergency','Surgery','Checkup','New Visit'],required:true},
+    {key:'status',label:'Status',type:'select',options:['Scheduled','Confirmed','Completed','Cancelled','Pending'],required:true},
+    {key:'notes',label:'Notes',type:'textarea',placeholder:'Reason for visit…'},
+  ];
+  const renderRow={
+    headers:['Patient','Doctor','Department','Date','Time','Type','Status'],
+    cells:(a)=>[
+      <td key="p" className="td-main">{a.patientName}</td>,
+      <td key="d">{a.doctorName}</td>,
+      <td key="dep">{a.department||'-'}</td>,
+      <td key="dt">{a.date}</td>,
+      <td key="t">{a.time}</td>,
+      <td key="ty"><span className="badge badge-purple">{a.type}</span></td>,
+      <td key="s"><span className={statusClass(a.status)}>{a.status}</span></td>,
+    ]
+  };
+  return <CrudPage title="Appointments" icon="📅" path="appointments" fields={fields} renderRow={renderRow}/>;
+}
+
+/* ─── PHARMACY ───────────────────────────────────────────── */
+function PharmacyPage(){
+  const [items,setItems]=useState([]);
+  const [modal,setModal]=useState(null);
+  const [form,setForm]=useState({});
+  const [saving,setSaving]=useState(false);
+  const [search,setSearch]=useState('');
+  const [confirm,setConfirm]=useState(null);
+  const [tab,setTab]=useState('all');
+
+  useEffect(()=>fbList('pharmacy',setItems),[]);
+
+  const fields=[
+    {key:'name',label:'Drug Name',required:true,placeholder:'Amoxicillin 500mg'},
+    {key:'category',label:'Category',type:'select',options:['Antibiotic','Antidiabetic','Antihypertensive','Analgesic','Antiviral','Vitamin','Antacid','Statin','Other'],required:true},
+    {key:'stock',label:'Current Stock',type:'number',required:true,placeholder:'100'},
+    {key:'minStock',label:'Min Stock Level',type:'number',placeholder:'20'},
+    {key:'price',label:'Price ($)',type:'number',placeholder:'12.99'},
+    {key:'supplier',label:'Supplier',placeholder:'PharmaCo'},
+    {key:'expiry',label:'Expiry Date',type:'date'},
+    {key:'location',label:'Storage Location',placeholder:'Shelf A-3'},
+  ];
+
+  const openAdd=()=>{setForm({category:'Antibiotic',minStock:'20'});setModal('add');};
+  const openEdit=(item)=>{
+    const f={};fields.forEach(fi=>{f[fi.key]=item[fi.key]||'';});
+    setForm({...f,_id:item._id});setModal('edit');
+  };
+  const setF=(k,v)=>setForm(p=>({...p,[k]:v}));
+  const save=async()=>{
+    if(!form.name||!form.stock){toast('Drug name and stock are required','error');return;}
+    setSaving(true);
+    try{
+      if(modal==='edit'){await fbUpdate('pharmacy',form._id,form);toast('Drug updated!','success');}
+      else{await fbAdd('pharmacy',form);toast('Drug added!','success');}
+      setModal(null);
+    }catch(e){toast('Error: '+e.message,'error');}
+    setSaving(false);
+  };
+  const del=async(id)=>{
+    try{await fbDelete('pharmacy',id);toast('Deleted','info');}
+    catch(e){toast('Error: '+e.message,'error');}
+    setConfirm(null);
+  };
+
+  const filtered=items.filter(it=>{
+    const matchSearch=!search||it.name?.toLowerCase().includes(search.toLowerCase());
+    const matchTab=tab==='all'||(tab==='low'&&parseInt(it.stock||0)<=parseInt(it.minStock||10))||(tab==='ok'&&parseInt(it.stock||0)>parseInt(it.minStock||10));
+    return matchSearch&&matchTab;
+  });
+  const lowCount=items.filter(m=>parseInt(m.stock||0)<=parseInt(m.minStock||10)).length;
+
+  return(
+    <div className="fade-in">
+      {confirm&&<Confirm msg="Delete this drug?" onYes={()=>del(confirm)} onNo={()=>setConfirm(null)}/>}
+      {modal&&(
+        <Modal title={modal==='edit'?'Edit Drug':'Add Drug'} onClose={()=>setModal(null)}>
+          <div className="modal-body">
+            <div className="grid-2">
+              {fields.map(f=>(
+                <div key={f.key} className="form-group">
+                  <label className="form-label">{f.label}{f.required&&' *'}</label>
+                  {f.type==='select'
+                    ?<select className="form-input" value={form[f.key]||''} onChange={e=>setF(f.key,e.target.value)}>
+                        {f.options.map(o=><option key={o}>{o}</option>)}
+                      </select>
+                    :<input className="form-input" type={f.type||'text'} placeholder={f.placeholder||f.label}
+                        value={form[f.key]||''} onChange={e=>setF(f.key,e.target.value)}/>
+                  }
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="modal-foot">
+            <button className="btn btn-outline btn-sm" onClick={()=>setModal(null)}>Cancel</button>
+            <button className="btn btn-primary btn-sm" onClick={save} disabled={saving}>
+              {saving?<><div className="spinner"/>Saving…</>:(modal==='edit'?'Save Changes':'Add Drug')}
+            </button>
+          </div>
+        </Modal>
+      )}
+
+      <div className="page-header">
+        <div><div className="page-title">💊 Pharmacy</div><div className="page-sub">{items.length} drugs in inventory</div></div>
+        <div style={{display:'flex',gap:'.6rem',flexWrap:'wrap',alignItems:'center'}}>
+          <input className="form-input" style={{width:200,padding:'.5rem .9rem',fontSize:'.85rem'}} placeholder="Search drugs…" value={search} onChange={e=>setSearch(e.target.value)}/>
+          <button className="btn btn-primary btn-sm" onClick={openAdd}>+ Add Drug</button>
+        </div>
+      </div>
+
+      {lowCount>0&&<div className="alert alert-danger"><span>🚨</span><strong>{lowCount} drug(s) below minimum stock level. Reorder immediately!</strong></div>}
+
+      <div className="tabs">
+        <button className={`tab${tab==='all'?' active':''}`} onClick={()=>setTab('all')}>All ({items.length})</button>
+        <button className={`tab${tab==='low'?' active':''}`} onClick={()=>setTab('low')}>Low Stock ({lowCount})</button>
+        <button className={`tab${tab==='ok'?' active':''}`} onClick={()=>setTab('ok')}>In Stock ({items.length-lowCount})</button>
+      </div>
+
+      <div className="card">
+        <div className="table-wrap">
+          {filtered.length===0
+            ?<div className="empty"><div className="empty-icon">💊</div>No drugs found.</div>
+            :<table>
+              <thead><tr><th>Drug Name</th><th>Category</th><th>Stock</th><th>Min Level</th><th>Price</th><th>Expiry</th><th>Supplier</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody>
+                {filtered.map(m=>{
+                  const low=parseInt(m.stock||0)<=parseInt(m.minStock||10);
+                  const out=parseInt(m.stock||0)===0;
+                  return(
+                    <tr key={m._id}>
+                      <td className="td-main">{m.name}</td>
+                      <td><span className="badge badge-blue">{m.category}</span></td>
+                      <td><span style={{fontWeight:800,color:out?'var(--red)':low?'var(--amber)':'var(--green)'}}>{m.stock}</span></td>
+                      <td>{m.minStock||10}</td>
+                      <td>{m.price?fmt$(m.price):'-'}</td>
+                      <td>{m.expiry||'-'}</td>
+                      <td>{m.supplier||'-'}</td>
+                      <td><span className={statusClass(out?'out of stock':low?'low stock':'in stock')}>{out?'Out of Stock':low?'Low Stock':'In Stock'}</span></td>
+                      <td><div className="actions">
+                        <button className="btn btn-outline btn-sm" onClick={()=>openEdit(m)}>✏️ Edit</button>
+                        <button className="btn btn-sm" style={{background:'var(--red-pale)',color:'var(--red)',border:'none'}} onClick={()=>setConfirm(m._id)}>🗑️</button>
+                      </div></td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          }
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── BILLING ────────────────────────────────────────────── */
+function BillingPage(){
+  const fields=[
+    {key:'patient',label:'Patient Name',required:true,placeholder:'Jane Smith'},
+    {key:'amount',label:'Amount ($)',type:'number',required:true,placeholder:'850.00'},
+    {key:'date',label:'Date',type:'date',required:true,default:today()},
+    {key:'paymentMethod',label:'Payment Method',type:'select',options:['Cash','Credit Card','Insurance','Bank Transfer','Cheque']},
+    {key:'status',label:'Status',type:'select',options:['Unpaid','Paid','Partial','Cancelled'],required:true},
+    {key:'invoiceNo',label:'Invoice No.',placeholder:'INV-2026-001'},
+    {key:'description',label:'Description',type:'textarea',placeholder:'Services rendered…'},
+  ];
+  const renderRow={
+    headers:['Invoice','Patient','Amount','Date','Payment','Status'],
+    cells:(b)=>[
+      <td key="i"><span style={{fontFamily:'monospace',fontSize:'.8rem',color:'var(--blue)',fontWeight:700}}>{b.invoiceNo||b._id?.slice(0,8)}</span></td>,
+      <td key="p" className="td-main">{b.patient}</td>,
+      <td key="a" style={{fontWeight:800,color:'var(--green)'}}>{fmt$(b.amount)}</td>,
+      <td key="d">{b.date}</td>,
+      <td key="pm">{b.paymentMethod||'-'}</td>,
+      <td key="s"><span className={statusClass(b.status)}>{b.status}</span></td>,
+    ]
+  };
+  return <CrudPage title="Billing" icon="🧾" path="billing" fields={fields} renderRow={renderRow}/>;
+}
+
+/* ─── LABORATORY ─────────────────────────────────────────── */
+function LabPage(){
+  const fields=[
+    {key:'patientName',label:'Patient Name',required:true,placeholder:'Jane Smith'},
+    {key:'testName',label:'Test Name',required:true,placeholder:'Complete Blood Count'},
+    {key:'testType',label:'Test Type',type:'select',options:['Blood Test','Urine Test','X-Ray','MRI','CT Scan','ECG','Ultrasound','Biopsy','Culture','Other']},
+    {key:'doctor',label:'Ordering Doctor',placeholder:'Dr. Name'},
+    {key:'date',label:'Date',type:'date',default:today()},
+    {key:'priority',label:'Priority',type:'select',options:['Routine','Urgent','STAT']},
+    {key:'status',label:'Status',type:'select',options:['Pending','Processing','Completed','Cancelled']},
+    {key:'result',label:'Result',type:'textarea',placeholder:'Test results or pending…'},
+  ];
+  const renderRow={
+    headers:['Patient','Test','Type','Doctor','Date','Priority','Status'],
+    cells:(l)=>[
+      <td key="p" className="td-main">{l.patientName}</td>,
+      <td key="t">{l.testName}</td>,
+      <td key="ty"><span className="badge badge-blue">{l.testType||'Other'}</span></td>,
+      <td key="d">{l.doctor||'-'}</td>,
+      <td key="dt">{l.date}</td>,
+      <td key="pr"><span className={`badge ${l.priority==='STAT'?'badge-red':l.priority==='Urgent'?'badge-amber':'badge-gray'}`}>{l.priority||'Routine'}</span></td>,
+      <td key="s"><span className={statusClass(l.status)}>{l.status}</span></td>,
+    ]
+  };
+  return <CrudPage title="Laboratory" icon="🔬" path="lab" fields={fields} renderRow={renderRow}/>;
+}
+
+/* ─── ROOMS ──────────────────────────────────────────────── */
+function RoomsPage(){
+  const [rooms,setRooms]=useState([]);
+  const [modal,setModal]=useState(null);
+  const [form,setForm]=useState({});
+  const [saving,setSaving]=useState(false);
+  const [confirm,setConfirm]=useState(null);
+  const [view,setView]=useState('grid');
+
+  useEffect(()=>fbList('rooms',setRooms),[]);
+
+  const fields=[
+    {key:'roomNo',label:'Room Number',required:true,placeholder:'101'},
+    {key:'type',label:'Room Type',type:'select',options:['General','Private','ICU','Emergency','Pediatric','Maternity','Surgery'],required:true},
+    {key:'floor',label:'Floor',placeholder:'1st Floor'},
+    {key:'capacity',label:'Capacity',type:'number',placeholder:'2'},
+    {key:'status',label:'Status',type:'select',options:['Available','Occupied','Maintenance','Reserved'],required:true},
+    {key:'patient',label:'Assigned Patient',placeholder:'Patient name or —'},
+    {key:'rate',label:'Daily Rate ($)',type:'number',placeholder:'250'},
+    {key:'notes',label:'Notes',type:'textarea',placeholder:'Additional info…'},
+  ];
+
+  const openAdd=()=>{setForm({status:'Available',type:'General'});setModal('add');};
+  const openEdit=(r)=>{const f={};fields.forEach(fi=>{f[fi.key]=r[fi.key]||'';});setForm({...f,_id:r._id});setModal('edit');};
+  const setF=(k,v)=>setForm(p=>({...p,[k]:v}));
+  const save=async()=>{
+    if(!form.roomNo||!form.type){toast('Room number and type required','error');return;}
+    setSaving(true);
+    try{
+      if(modal==='edit'){await fbUpdate('rooms',form._id,form);toast('Room updated!','success');}
+      else{await fbAdd('rooms',form);toast('Room added!','success');}
+      setModal(null);
+    }catch(e){toast('Error: '+e.message,'error');}
+    setSaving(false);
+  };
+  const del=async(id)=>{
+    try{await fbDelete('rooms',id);toast('Deleted','info');}
+    catch(e){toast('Error: '+e.message,'error');}
+    setConfirm(null);
+  };
+
+  const avail=rooms.filter(r=>r.status==='Available').length;
+  const occupied=rooms.filter(r=>r.status==='Occupied').length;
+  const maint=rooms.filter(r=>r.status==='Maintenance').length;
+
+  return(
+    <div className="fade-in">
+      {confirm&&<Confirm msg="Delete this room?" onYes={()=>del(confirm)} onNo={()=>setConfirm(null)}/>}
+      {modal&&(
+        <Modal title={modal==='edit'?'Edit Room':'Add Room'} onClose={()=>setModal(null)}>
+          <div className="modal-body">
+            <div className="grid-2">
+              {fields.filter(f=>f.type!=='textarea').map(f=>(
+                <div key={f.key} className="form-group">
+                  <label className="form-label">{f.label}{f.required&&' *'}</label>
+                  {f.type==='select'
+                    ?<select className="form-input" value={form[f.key]||''} onChange={e=>setF(f.key,e.target.value)}>
+                        <option value="">Select…</option>{f.options.map(o=><option key={o}>{o}</option>)}
+                      </select>
+                    :<input className="form-input" type={f.type||'text'} placeholder={f.placeholder||f.label}
+                        value={form[f.key]||''} onChange={e=>setF(f.key,e.target.value)}/>
+                  }
+                </div>
+              ))}
+            </div>
+            {fields.filter(f=>f.type==='textarea').map(f=>(
+              <div key={f.key} className="form-group">
+                <label className="form-label">{f.label}</label>
+                <textarea className="form-input" rows={3} value={form[f.key]||''} onChange={e=>setF(f.key,e.target.value)}/>
+              </div>
+            ))}
+          </div>
+          <div className="modal-foot">
+            <button className="btn btn-outline btn-sm" onClick={()=>setModal(null)}>Cancel</button>
+            <button className="btn btn-primary btn-sm" onClick={save} disabled={saving}>
+              {saving?<><div className="spinner"/>Saving…</>:(modal==='edit'?'Save Changes':'Add Room')}
+            </button>
+          </div>
+        </Modal>
+      )}
+
+      <div className="page-header">
+        <div><div className="page-title">🛏️ Rooms & Beds</div><div className="page-sub">{rooms.length} rooms total</div></div>
+        <div style={{display:'flex',gap:'.6rem',flexWrap:'wrap'}}>
+          <button className={`btn btn-sm ${view==='grid'?'btn-primary':'btn-outline'}`} onClick={()=>setView('grid')}>Grid</button>
+          <button className={`btn btn-sm ${view==='table'?'btn-primary':'btn-outline'}`} onClick={()=>setView('table')}>Table</button>
+          <button className="btn btn-primary btn-sm" onClick={openAdd}>+ Add Room</button>
+        </div>
+      </div>
+
+      <div className="grid-4" style={{marginBottom:'1.2rem'}}>
+        {[['🛏️','Total',rooms.length,'blue'],['✅','Available',avail,'green'],['🔴','Occupied',occupied,'red'],['🔧','Maintenance',maint,'amber']].map(([ic,lb,vl,cl])=>(
+          <div key={lb} className="stat-card">
+            <div className={`stat-icon ${cl}`}>{ic}</div>
+            <div><div className="stat-val">{vl}</div><div className="stat-label">{lb}</div></div>
+          </div>
+        ))}
+      </div>
+
+      {view==='grid'&&(
+        rooms.length===0
+          ?<div className="empty card" style={{padding:'3rem'}}><div className="empty-icon">🛏️</div>No rooms added yet.</div>
+          :<div className="room-grid">
+            {rooms.map(r=>(
+              <div key={r._id} className={`room-cell room-${(r.status||'available').toLowerCase()}`} title={`${r.type||''} • ${r.patient||'—'}`} onClick={()=>openEdit(r)}>
+                <div className="room-num">{r.roomNo}</div>
+                <div style={{fontSize:'.62rem',textTransform:'uppercase',letterSpacing:'.04em'}}>{(r.status||'?').slice(0,4)}</div>
+              </div>
+            ))}
+          </div>
+      )}
+
+      {view==='table'&&(
+        <div className="card">
+          <div className="table-wrap">
+            {rooms.length===0
+              ?<div className="empty"><div className="empty-icon">🛏️</div>No rooms yet.</div>
+              :<table>
+                <thead><tr><th>Room No.</th><th>Type</th><th>Floor</th><th>Capacity</th><th>Patient</th><th>Rate</th><th>Status</th><th>Actions</th></tr></thead>
+                <tbody>{rooms.map(r=>(
+                  <tr key={r._id}>
+                    <td className="td-main">{r.roomNo}</td>
+                    <td><span className="badge badge-blue">{r.type}</span></td>
+                    <td>{r.floor||'-'}</td>
+                    <td>{r.capacity||'-'}</td>
+                    <td>{r.patient||'—'}</td>
+                    <td>{r.rate?fmt$(r.rate)+'/day':'-'}</td>
+                    <td><span className={statusClass(r.status)}>{r.status}</span></td>
+                    <td><div className="actions">
+                      <button className="btn btn-outline btn-sm" onClick={()=>openEdit(r)}>✏️ Edit</button>
+                      <button className="btn btn-sm" style={{background:'var(--red-pale)',color:'var(--red)',border:'none'}} onClick={()=>setConfirm(r._id)}>🗑️</button>
+                    </div></td>
+                  </tr>
+                ))}</tbody>
+              </table>
+            }
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ─── SETTINGS ───────────────────────────────────────────── */
+function SettingsPage({user,onLogout}){
+  const [name,setName]=useState(user.name||'');
+  const [saving,setSaving]=useState(false);
+
+  const save=async()=>{
+    setSaving(true);
+    try{
+      const {db,ref,update}=window.$fb;
+      await update(ref(db,`users/${user.uid}`),{name});
+      toast('Profile updated!','success');
+    }catch(e){toast('Error: '+e.message,'error');}
+    setSaving(false);
+  };
+
+  return(
+    <div className="fade-in">
+      <div className="page-header"><div className="page-title">⚙️ Settings</div></div>
+      <div className="grid-2">
+        <div className="card">
+          <div className="card-header"><span className="card-title">Profile</span></div>
+          <div className="card-body">
+            <div style={{display:'flex',alignItems:'center',gap:'1rem',marginBottom:'1.5rem'}}>
+              <div className="av av-lg">{initials(user.name)}</div>
+              <div>
+                <div style={{fontWeight:800,fontSize:'1rem',color:'var(--navy)'}}>{user.name}</div>
+                <div style={{color:'var(--text3)',fontSize:'.85rem'}}>{user.email}</div>
+                <span className="badge badge-blue" style={{marginTop:'.4rem',textTransform:'capitalize'}}>{user.role}</span>
+              </div>
+            </div>
+            <div className="form-group"><label className="form-label">Display Name</label>
+              <input className="form-input" value={name} onChange={e=>setName(e.target.value)}/>
+            </div>
+            <div className="form-group"><label className="form-label">Email</label>
+              <input className="form-input" value={user.email} disabled style={{opacity:.6}}/>
+            </div>
+            <div className="form-group"><label className="form-label">Role</label>
+              <input className="form-input" value={user.role} disabled style={{opacity:.6,textTransform:'capitalize'}}/>
+            </div>
+            <button className="btn btn-primary" onClick={save} disabled={saving}>
+              {saving?<><div className="spinner"/>Saving…</>:'Save Changes'}
+            </button>
+          </div>
+        </div>
+        <div className="card">
+          <div className="card-header"><span className="card-title">System</span></div>
+          <div className="card-body">
+            <div className="alert alert-info"><span>ℹ️</span><div>Connected to Firebase Realtime Database. All data is saved in real-time.</div></div>
+            <div style={{marginTop:'1rem'}}>
+              <div style={{fontSize:'.82rem',color:'var(--text3)',marginBottom:'.5rem',fontWeight:600,textTransform:'uppercase',letterSpacing:'.05em'}}>Firebase Project</div>
+              <div style={{fontFamily:'monospace',fontSize:'.82rem',background:'var(--bg)',padding:'.6rem .9rem',borderRadius:'var(--radius-sm)',color:'var(--text2)'}}>medicore-hms-796e9</div>
+            </div>
+            <div style={{marginTop:'1.5rem'}}>
+              <button className="btn btn-danger" onClick={onLogout}>Sign Out</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── TOPBAR ─────────────────────────────────────────────── */
+function Topbar({page,user,onMenu,onLogout}){
+  const [showNotif,setShowNotif]=useState(false);
+  const [notifs,setNotifs]=useState([]);
+  const [lowStock,setLowStock]=useState([]);
+
+  useEffect(()=>{
+    const unsub=fbList('pharmacy',d=>{
+      const low=d.filter(x=>parseInt(x.stock||0)<=parseInt(x.minStock||10));
+      setLowStock(low);
+      setNotifs(low.map(m=>({
+        text:`Low stock: ${m.name} (${m.stock} left)`,
+        time:'Just now',
+        color:'var(--amber)'
+      })));
+    });
+    return()=>unsub&&unsub();
+  },[]);
+
+  const titles={dashboard:'Dashboard',patients:'Patients',doctors:'Doctors',appointments:'Appointments',pharmacy:'Pharmacy',billing:'Billing',lab:'Laboratory',rooms:'Rooms & Beds',settings:'Settings'};
+
+  return(
+    <div className="topbar">
+      <button className="topbar-menu" onClick={onMenu}>☰</button>
+      <div className="topbar-title">{titles[page]||page}</div>
+      <div className="topbar-search">
+        <span className="topbar-search-icon">🔍</span>
+        <input placeholder="Search…"/>
+      </div>
+      <div className="topbar-right">
+        <div style={{position:'relative'}}>
+          <button className="icon-btn" onClick={()=>setShowNotif(o=>!o)}>
+            🔔{lowStock.length>0&&<div className="notif-badge"/>}
+          </button>
+          {showNotif&&(
+            <>
+              <div className="overlay-backdrop" onClick={()=>setShowNotif(false)}/>
+              <NotifPanel items={notifs} onClose={()=>setShowNotif(false)}/>
+            </>
+          )}
+        </div>
+        <div className="av" style={{cursor:'pointer'}} title={user.name} onClick={onLogout}>
+          {initials(user.name)}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── SIDEBAR ────────────────────────────────────────────── */
+const NAV=[
+  {section:'Overview',items:[{page:'dashboard',icon:'📊',label:'Dashboard'}]},
+  {section:'Clinical',items:[
+    {page:'patients',icon:'🧑‍⚕️',label:'Patients'},
+    {page:'doctors',icon:'👨‍⚕️',label:'Doctors'},
+    {page:'appointments',icon:'📅',label:'Appointments'},
+    {page:'lab',icon:'🔬',label:'Laboratory'},
+    {page:'rooms',icon:'🛏️',label:'Rooms & Beds'},
+  ]},
+  {section:'Operations',items:[
+    {page:'pharmacy',icon:'💊',label:'Pharmacy'},
+    {page:'billing',icon:'🧾',label:'Billing'},
+  ]},
+  {section:'System',items:[
+    {page:'settings',icon:'⚙️',label:'Settings'},
+  ]},
+];
+
+function Sidebar({page,setPage,user,open,onClose,onLogout}){
+  return(
+    <nav className={`sidebar${open?' open':''}`}>
+      <div className="sb-logo">
+        <div className="sb-logo-icon">✚</div>
+        <div>
+          <div className="sb-logo-text">MediCore</div>
+          <div className="sb-logo-sub">HMS v3.0</div>
+        </div>
+      </div>
+      {NAV.map(s=>(
+        <div key={s.section} className="sb-section">
+          <div className="sb-section-label">{s.section}</div>
+          {s.items.map(it=>(
+            <div key={it.page} className={`nav-link${page===it.page?' active':''}`}
+              onClick={()=>{setPage(it.page);onClose();}}>
+              <span className="nav-icon">{it.icon}</span>{it.label}
+            </div>
+          ))}
+        </div>
+      ))}
+      <div className="sb-footer">
+        <div className="sb-user" onClick={onLogout} title="Click to sign out">
+          <div className="av">{initials(user.name)}</div>
+          <div className="sb-user-info">
+            <div className="sb-user-name">{user.name}</div>
+            <div className="sb-user-role">{user.role} · Sign out</div>
+          </div>
+        </div>
+      </div>
+    </nav>
+  );
+}
+
+/* ─── BOTTOM NAV ─────────────────────────────────────────── */
+function BottomNav({page,setPage}){
+  const [more,setMore]=useState(false);
+  const primary=[
+    {page:'dashboard',icon:'📊',label:'Home'},
+    {page:'patients',icon:'🧑‍⚕️',label:'Patients'},
+    {page:'appointments',icon:'📅',label:'Appts'},
+    {page:'pharmacy',icon:'💊',label:'Pharmacy'},
+  ];
+  const secondary=[
+    {page:'doctors',icon:'👨‍⚕️',label:'Doctors'},
+    {page:'billing',icon:'🧾',label:'Billing'},
+    {page:'lab',icon:'🔬',label:'Lab'},
+    {page:'rooms',icon:'🛏️',label:'Rooms'},
+    {page:'settings',icon:'⚙️',label:'Settings'},
+  ];
+  const handleMore=(p)=>{setPage(p);setMore(false);};
+  return(
+    <>
+      {more&&(
+        <>
+          <div style={{position:'fixed',inset:0,zIndex:250,background:'rgba(0,0,0,.4)'}} onClick={()=>setMore(false)}/>
+          <div className="bn-more-panel" style={{zIndex:260}}>
+            <div style={{textAlign:'center',fontWeight:800,fontSize:'.8rem',color:'var(--text3)',textTransform:'uppercase',letterSpacing:'.08em'}}>More</div>
+            <div className="bn-more-grid">
+              {secondary.map(it=>(
+                <button key={it.page} className={`bn-more-item${page===it.page?' active':''}`} onClick={()=>handleMore(it.page)}>
+                  <span style={{fontSize:'1.4rem'}}>{it.icon}</span>
+                  <span>{it.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+      <div className="bottom-nav">
+        <div className="bottom-nav-inner">
+          {primary.map(it=>(
+            <button key={it.page} className={`bn-item${page===it.page?' active':''}`} onClick={()=>{setPage(it.page);setMore(false);}}>
+              <span className="bn-icon">{it.icon}</span>
+              <span className="bn-label">{it.label}</span>
+            </button>
+          ))}
+          <button className={`bn-item${secondary.some(s=>s.page===page)?' active':''}`} onClick={()=>setMore(o=>!o)}>
+            <span className="bn-icon">⋯</span>
+            <span className="bn-label">More</span>
+          </button>
+        </div>
+      </div>
+    </>
+  );
+}
+
+/* ─── APP ────────────────────────────────────────────────── */
+function App(){
+  const [user,setUser]=useState(null);
+  const [page,setPage]=useState('dashboard');
+  const [sidebarOpen,setSidebarOpen]=useState(false);
+  const [authChecked,setAuthChecked]=useState(false);
+
+  useEffect(()=>{
+    const {auth,onAuthStateChanged,db,ref,get}=window.$fb;
+    const unsub=onAuthStateChanged(auth,async(u)=>{
+      if(u){
+        try{
+          const snap=await get(ref(db,`users/${u.uid}`));
+          if(snap.exists()){
+            const d=snap.val();
+            setUser({uid:u.uid,name:d.name||u.email.split('@')[0],role:d.role||'admin',email:u.email});
+          } else {
+            setUser({uid:u.uid,name:u.email.split('@')[0],role:'admin',email:u.email});
+          }
+        }catch(e){
+          setUser({uid:u.uid,name:u.email.split('@')[0],role:'admin',email:u.email});
+        }
+      } else setUser(null);
+      setAuthChecked(true);
+    });
+    return()=>unsub();
+  },[]);
+
+  const logout=async()=>{
+    try{
+      await window.$fb.signOut(window.$fb.auth);
+      setUser(null);setPage('dashboard');
+      toast('Signed out','info');
+    }catch(e){toast('Error: '+e.message,'error');}
+  };
+
+  if(!authChecked) return(
+    <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:'var(--bg)'}}>
+      <div style={{textAlign:'center'}}>
+        <div className="spinner spinner-dark" style={{width:36,height:36,margin:'0 auto 1rem'}}/>
+        <div style={{color:'var(--text3)',fontSize:'.9rem'}}>Loading MediCore…</div>
+      </div>
+    </div>
+  );
+
+  if(!user) return <AuthPage onLogin={setUser}/>;
+
+  const renderPage=()=>{
+    switch(page){
+      case 'dashboard':    return <DashboardPage/>;
+      case 'patients':     return <PatientsPage/>;
+      case 'doctors':      return <DoctorsPage/>;
+      case 'appointments': return <AppointmentsPage/>;
+      case 'pharmacy':     return <PharmacyPage/>;
+      case 'billing':      return <BillingPage/>;
+      case 'lab':          return <LabPage/>;
+      case 'rooms':        return <RoomsPage/>;
+      case 'settings':     return <SettingsPage user={user} onLogout={logout}/>;
+      default:             return <DashboardPage/>;
+    }
+  };
+
+  return(
+    <div className="app">
+      {sidebarOpen&&<div className="overlay-backdrop" style={{zIndex:190}} onClick={()=>setSidebarOpen(false)}/>}
+      <Sidebar page={page} setPage={setPage} user={user} open={sidebarOpen} onClose={()=>setSidebarOpen(false)} onLogout={logout}/>
+      <div className="main">
+        <Topbar page={page} user={user} onMenu={()=>setSidebarOpen(o=>!o)} onLogout={logout}/>
+        <div className="content">{renderPage()}</div>
+      </div>
+      <BottomNav page={page} setPage={setPage}/>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
